@@ -1,0 +1,88 @@
+{
+    "tasks": [
+        {
+            "label": "Create build folder",
+            "type": "process",
+            "command": "mkdir",
+            "args": [
+                "-p",
+                "${workspaceFolder}/build"
+            ],
+            "presentation": {
+                "echo": false,
+                "reveal": "never",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake - Configure",
+            "type": "shell",
+            "group": "build",
+            "command": "cmake",
+            "linux": {
+                "options": {
+                    "shell": {
+                        "args": [
+                            // Needed for bash to parse ~/.bashrc (where e.g. npm is)
+                            "-i"
+                        ]
+                    }
+                }
+            },
+            "args": [
+                "-S",
+                "${workspaceFolder}",
+                "-B",
+                "${workspaceFolder}/build",
+                "-DCMAKE_BUILD_TYPE=${input:build_type}"
+            ],
+            "dependsOn": [
+                "Create build folder"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Make",
+            "type": "shell",
+            "group": "build",
+            "command": "make",
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
+            "args": [
+                "-j${input:number_threads}"
+            ],
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "build_type",
+            "description": "The CMake build type",
+            "default": "RelWithDebInfo",
+            "type": "pickString",
+            "options": [
+                "Debug",
+                "Release",
+                "RelWithDebInfo"
+            ]
+        },
+        {
+            "id": "number_threads",
+            "description": "The number of threads to use",
+            "default": "2",
+            "type": "pickString",
+            "options": [
+                "1",
+                "2",
+                "4",
+                "8"
+            ]
+        }
+    ],
+    "version": "2.0.0"
+}
